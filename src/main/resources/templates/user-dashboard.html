@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Dashboard</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px;}
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background-color: #f0f0f0; }
+        h2 { margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>Welcome, <span th:text="${user.username}">User</span></h1>
+
+    <h2>Available Books to Borrow</h2>
+    <form th:action="@{/user/borrow/{userId}(userId=${user.id})}" method="post">
+        <select name="bookId" required>
+            <option value="" disabled selected>Select a book</option>
+            <option th:each="book : ${availableBooks}"
+                    th:value="${book.id}"
+                    th:text="${book.title + ' by ' + book.author + ' (Available: ' + book.quantity + ')'}">
+            </option>
+        </select>
+        <button type="submit">Borrow</button>
+    </form>
+
+    <h2>Books Currently Borrowed</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Book</th><th>Borrow Date</th><th>Return Date</th><th>Status</th><th>Fine</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="b : ${currentBorrows}">
+                <td th:text="${b.book.title}"></td>
+                <td th:text="${b.borrowDate}"></td>
+                <td th:text="${b.returnDate} == null ? 'Not returned' : b.returnDate"></td>
+                <td th:text="${b.returned} ? 'Returned' : 'Not returned'"></td>
+                <td th:text="${b.fine}"></td>
+                <td>
+                    <form th:action="@{/user/return/{borrowId}(borrowId=${b.id})}" method="post" th:if="!${b.returned}">
+                        <button type="submit">Return</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Borrow History</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Book</th><th>Borrow Date</th><th>Return Date</th><th>Status</th><th>Fine</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="b : ${borrowHistory}">
+                <td th:text="${b.book.title}"></td>
+                <td th:text="${b.borrowDate}"></td>
+                <td th:text="${b.returnDate} == null ? 'Not returned' : b.returnDate"></td>
+                <td th:text="${b.returned} ? 'Returned' : 'Not returned'"></td>
+                <td th:text="${b.fine}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
