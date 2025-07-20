@@ -1,4 +1,5 @@
 package com.example.demo.Controller;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,31 +12,38 @@ import com.example.demo.Repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
 
-
 @Controller
 public class AuthController {
 
-  @Autowired
+    @Autowired
     private UserRepository userRepository;
+
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/login";
+    }
 
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login"; 
+        return "login";
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password, HttpSession session, Model model) {
+    public String login(@RequestParam String username,
+                        @RequestParam String password,
+                        HttpSession session,
+                        Model model) {
         System.out.println("Login attempt: username=" + username + ", password=" + password);
         User user = userRepository.findByUsernameAndPassword(username, password);
 
         if (user != null) {
             System.out.println("Login success for user: " + user.getUsername());
-            session.setAttribute("username", user.getUsername());
-            session.setAttribute("role", user.getRole());
+            session.setAttribute("user", user);
+
             if ("admin".equals(user.getRole())) {
-                return "redirect:/admin-dashboard";
+                return "redirect:/admin/dashboard/" + user.getId();
             } else {
-                return "redirect:/user-dashboard";
+                return "redirect:/user/dashboard/" + user.getId();
             }
         } else {
             System.out.println("Login failed: invalid username or password");
@@ -44,4 +52,9 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
+    }
 }

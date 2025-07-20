@@ -58,7 +58,7 @@
             <tr th:each="b : ${borrowHistory}">
                 <td th:text="${b.book.title}"></td>
                 <td th:text="${b.borrowDate}"></td>
-                <td th:text="${b.returnDate} == null ? 'Not returned' : b.returnDate"></td>
+                <td th:text="${b.returnDate != null} ? ${b.returnDate} : 'Not returned'"></td>
                 <td th:text="${b.returned} ? 'Returned' : 'Not returned'"></td>
                 <td th:text="${b.fine}"></td>
             </tr>

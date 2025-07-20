@@ -1,61 +1,108 @@
 package com.example.demo.Controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.demo.Model.Book;
+import com.example.demo.Model.Borrow;
 import com.example.demo.Model.User;
+import com.example.demo.Repository.BookRepository;
+import com.example.demo.Repository.BorrowRepository;
 import com.example.demo.Repository.UserRepository;
 
-@RestController
-@RequestMapping("/api/users")
+
+@Controller
+@RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+    @Autowired private UserRepository userRepo;
+    @Autowired private BookRepository bookRepo;
+    @Autowired private BorrowRepository borrowRepo;
 
-    // Create
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
+    @GetMapping("/dashboard/{userId}")
+    public String userDashboard(@PathVariable Long userId, Model model) {
+        User user = userRepo.findById(userId).orElse(null);
+        if(user == null) {
+            return "error"; // หรือหน้า error อื่น ๆ
+        }
+
+        List<Book> availableBooks = bookRepo.findAll();
+        List<Borrow> currentBorrows = borrowRepo.findByUserIdAndReturnedFalse(userId);
+        List<Borrow> borrowHistory = borrowRepo.findByUserId(userId);
+
+        model.addAttribute("user", user);
+        model.addAttribute("availableBooks", availableBooks);
+        model.addAttribute("currentBorrows", currentBorrows);
+        model.addAttribute("borrowHistory", borrowHistory);
+        model.addAttribute("newBorrow", new Borrow()); 
+
+        return "user-dashboard";
     }
 
-    // Read all
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    // POST ยืมหนังสือ
+    @PostMapping("/borrow/{userId}")
+    public String borrowBook(@PathVariable Long userId, @RequestParam Long bookId) {
+        User user = userRepo.findById(userId).orElse(null);
+        Book book = bookRepo.findById(bookId).orElse(null);
+
+        if(user == null || book == null || book.getQuantity() <= 0) {
+            return "redirect:/user/dashboard/" + userId + "?error";
+        }
+
+        // สร้าง record ยืม
+        Borrow borrow = new Borrow();
+        borrow.setUser(user);
+        borrow.setBook(book);
+        borrow.setBorrowDate(LocalDate.now());
+        borrow.setReturned(false);
+        borrow.setFine(0.0);
+
+        borrowRepo.save(borrow);
+
+        // ลดจำนวนหนังสือ
+        book.setQuantity(book.getQuantity() - 1);
+        bookRepo.save(book);
+
+        return "redirect:/user/dashboard/" + userId;
     }
 
-    // Read one
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userRepository.findById(id).orElse(null);
+    // POST คืนหนังสือ
+    @PostMapping("/return/{borrowId}")
+    public String returnBook(@PathVariable Long borrowId) {
+        Borrow borrow = borrowRepo.findById(borrowId).orElse(null);
+        if (borrow == null) {
+            return "redirect:/user/dashboard"; 
+        }
+        if (borrow.isReturned()) {
+            return "redirect:/user/dashboard/" + borrow.getUser().getId();
+        }
+
+        borrow.setReturned(true);
+        borrow.setReturnDate(LocalDate.now());
+
+        long daysBorrowed = java.time.temporal.ChronoUnit.DAYS.between(borrow.getBorrowDate(), borrow.getReturnDate());
+        if (daysBorrowed > 7) {
+            borrow.setFine((daysBorrowed - 7) * 10);
+        } else {
+            borrow.setFine(0.0);
+        }
+
+        borrowRepo.save(borrow);
+
+        Book book = borrow.getBook();
+        book.setQuantity(book.getQuantity() + 1);
+        bookRepo.save(book);
+
+        return "redirect:/user/dashboard/" + borrow.getUser().getId();
     }
 
-    // Update
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setUsername(updatedUser.getUsername());
-                    user.setPassword(updatedUser.getPassword());
-                    user.setRole(updatedUser.getRole());
-                    return userRepository.save(user);
-                }).orElse(null);
-    }
-
-    // Delete
-    @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        userRepository.deleteById(id);
-        return "Deleted user with id " + id;
-    }
 }

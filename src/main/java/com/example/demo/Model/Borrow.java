@@ -83,5 +83,12 @@ public class Borrow {
     public void setFine(double fine) {
         this.fine = fine;
     }
+    public String getStatus() {
+    return returned ? "Returned" : "Not returned";
+}
+
+    public String getFineStatus() {
+        return fine > 0 ? "There is a fine" : "No fines";
+    }
 }
 
