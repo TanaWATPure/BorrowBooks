@@ -1,12 +1,12 @@
 package com.example.demo.Model;
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-
 
 @Entity
 public class Borrow {
@@ -20,11 +20,13 @@ public class Borrow {
     @ManyToOne
     private Book book;
 
-    private LocalDate borrowDate;
-    private LocalDate returnDate;
-    private boolean returned;
+    private LocalDateTime borrowDate;
+    private LocalDateTime returnDate;
+    private LocalDateTime dueDate;
 
-    private double fine; 
+    private boolean returned;
+    private double fine;
+    private int quantity;
 
     // ====== Getter & Setter ======
 
@@ -52,20 +54,29 @@ public class Borrow {
         this.book = book;
     }
 
-    public LocalDate getBorrowDate() {
+    // === แก้ไข Getter & Setter สำหรับวันที่ ===
+    public LocalDateTime getBorrowDate() {
         return borrowDate;
     }
 
-    public void setBorrowDate(LocalDate borrowDate) {
+    public void setBorrowDate(LocalDateTime borrowDate) {
         this.borrowDate = borrowDate;
     }
 
-    public LocalDate getReturnDate() {
+    public LocalDateTime getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(LocalDate returnDate) {
+    public void setReturnDate(LocalDateTime returnDate) {
         this.returnDate = returnDate;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
     }
 
     public boolean isReturned() {
@@ -83,12 +94,20 @@ public class Borrow {
     public void setFine(double fine) {
         this.fine = fine;
     }
+
     public String getStatus() {
-    return returned ? "Returned" : "Not returned";
-}
+        return returned ? "คืนแล้ว" : "ยังไม่คืน";
+    }
 
     public String getFineStatus() {
-        return fine > 0 ? "There is a fine" : "No fines";
+        return fine > 0 ? "มีค่าปรับ" : "ไม่มีค่าปรับ";
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }
-

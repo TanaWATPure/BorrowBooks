@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: content(~{::section})}">
+
+<body>
+    <section>
+        <h2>บันทึกการยืมหนังสือ</h2>
+
+        <table border="1" style="width: 100%; margin-top: 20px;">
+            <thead>
+                <tr>
+                    <th>ไอดี</th>
+                    <th>ผู้ใช้</th>
+                    <th>หนังสือ</th>
+                    <th>จำนวน</th>
+                    <th>วันยืมหนังสือ</th>
+                    <th>วันคืนหนังสือ</th>
+                    <th>สถานะ</th>
+                    <th>ค่าปรับ</th>
+                    <th>การจัดการ</th>
+
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="b : ${borrows}">
+                    <td th:text="${b.id}"></td>
+                    <td th:text="${b.user.username}"></td>
+                    <td th:text="${b.book.title}"></td>
+                    <td th:text="${b.quantity}"></td>
+
+                    <!-- Borrow Date -->
+                    <td th:text="${b.borrowDate != null} ? ${#temporals.format(b.borrowDate, 'dd-MM-yyyy HH:mm:ss')} : ''"></td>
+
+                    <!-- Due Date -->
+                    <td th:text="${b.dueDate != null} ? ${#temporals.format(b.dueDate, 'dd-MM-yyyy HH:mm:ss')} : ''"></td>
+
+                    <!-- Return Date -->
+                    <td>
+                        <span th:if="${b.returned}" th:text="${#temporals.format(b.returnDate, 'dd-MM-yyyy HH:mm:ss')}"></span>
+                        
+                        <!-- If not returned, show form to update -->
+                        <div th:unless="${b.returned}">
+                            <span style="display:block; margin-bottom:5px; color: red;">ยังไม่คืน</span>
+                            <form th:action="@{/admin/books/update-return-date/{borrowId}(borrowId=${b.id})}"
+                                  method="post"
+                                  style="display: flex; flex-direction: column;">
+                                <input type="datetime-local" name="returnDate" required style="margin-bottom: 5px; width: 180px;" />
+                                <button type="submit">อัปเดต</button>
+                            </form>
+                        </div>
+                    </td>
+
+                    <!-- Fine -->
+                    <td th:text="${b.fine != null} ? ${b.fine + ' บาท'} : '0.00 บาท'"></td>
+
+                    <!-- Status -->
+                    <td th:text="${b.returned} ? 'คืนแล้ว' : 'ยังไม่คืน'"></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</body>
+</html>

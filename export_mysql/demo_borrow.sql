@@ -23,19 +23,21 @@ DROP TABLE IF EXISTS `borrow`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `borrow` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `book_id` int NOT NULL,
-  `borrow_date` date NOT NULL,
-  `return_date` date DEFAULT NULL,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `book_id` bigint unsigned NOT NULL,
+  `borrow_date` datetime(6) DEFAULT NULL,
+  `return_date` datetime(6) DEFAULT NULL,
   `returned` tinyint(1) DEFAULT '0',
-  `fine` decimal(10,2) DEFAULT '0.00',
+  `fine` double NOT NULL,
+  `due_date` datetime(6) DEFAULT NULL,
+  `quantity` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `book_id` (`book_id`),
-  CONSTRAINT `borrow_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `borrow_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `book` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `borrow_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `borrow_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `book` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,6 +46,7 @@ CREATE TABLE `borrow` (
 
 LOCK TABLES `borrow` WRITE;
 /*!40000 ALTER TABLE `borrow` DISABLE KEYS */;
+INSERT INTO `borrow` VALUES (3,2,1,'2025-07-26 00:00:00.000000','2025-07-26 23:14:34.729883',1,0,NULL,0),(23,2,1,'2025-07-27 09:17:41.842335','2025-07-27 09:18:18.447407',1,0,'2025-08-03 09:17:41.842335',1),(24,2,1,'2025-07-27 12:08:26.682105','2025-07-27 12:08:30.936633',1,0,'2025-08-03 12:08:26.682105',1),(25,2,1,'2025-07-27 21:55:30.289694','2025-07-27 21:55:50.761736',1,0,'2025-08-03 21:55:30.289694',1),(26,2,1,'2025-07-27 21:55:37.473071','2025-07-27 21:55:49.902169',1,0,'2025-08-03 21:55:37.473071',2),(27,2,1,'2025-07-27 21:56:53.791493','2025-07-27 21:57:58.198968',1,0,'2025-08-03 21:56:53.791493',1),(28,2,1,'2025-07-27 21:57:49.401341','2025-07-27 21:57:58.588146',1,0,'2025-08-03 21:57:49.401341',1),(29,2,1,'2025-07-27 21:58:19.428056','2025-08-04 22:05:00.000000',1,10,'2025-08-03 21:58:19.428056',1),(31,2,1,'2025-07-27 22:09:32.854294','2025-07-28 21:56:40.633101',1,0,'2025-08-03 22:09:32.854294',1),(34,2,1,'2025-07-29 20:37:53.954374',NULL,0,0,'2025-08-05 20:37:53.954374',1),(35,2,15,'2025-08-03 20:40:45.834036',NULL,0,0,'2025-08-10 20:40:45.834036',1);
 /*!40000 ALTER TABLE `borrow` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -56,4 +59,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-20 12:30:30
+-- Dump completed on 2025-08-03 21:12:52

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"th:replace="~{layout/admin-layout :: content(~{::section})}">
+
+<body> 
+
+
+    <section>
+        <h2>สรุปแดชบอร์ด</h2>
+        
+        <div class="summary-cards"> 
+            <div class="card">
+                <h3>จำนวนผู้ใช้</h3>
+                <p th:text="${totalUsers}"></p>
+            </div>
+            <div class="card">
+                <h3>จำนวนหนังสือ</h3>
+                <p th:text="${totalBooks}"></p>
+            </div>
+            <div class="card">
+                <h3>จำนวนการยืมหนังสือ</h3>
+                <p th:text="${borrowedCount}"></p>
+            </div>
+        </div>
+
+    </section>
+
+</body>
+</html>

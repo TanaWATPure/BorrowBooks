@@ -1,16 +1,78 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <title>ล็อคอิน</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        .btn-login {
+            background: linear-gradient(to right, #0d6efd, #0a58ca);
+        }
+        .btn-login:hover {
+            background: linear-gradient(to right, #0a58ca, #0948a8);
+        }
+        .input-group-text {
+            cursor: pointer;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+        }
+    </style>
 </head>
-<body>
-    <h2>Login</h2>
-    <form th:action="@{/login}" method="post">
-        <input type="text" name="username" placeholder="Username" required /><br/>
-        <input type="password" name="password" placeholder="Password" required /><br/>
-        <button type="submit">Login</button>
-    </form>
+<body class="bg-light d-flex align-items-center justify-content-center min-vh-100">
+    <section class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4 fw-bold text-dark">🔐 ล็อคอิน</h2>
+                        <form th:action="@{/login}" th:object="${user}" method="post">
+                            <div class="mb-3">
+                                <label for="username" class="form-label fw-medium">ชื่อผู้ใช้งาน:</label>
+                                <input type="text" id="username" th:field="*{username}" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label fw-medium">รหัสผ่าน:</label>
+                                <div class="input-group">
+                                    <input type="password" id="password" th:field="*{password}" class="form-control" required />
+                                    <span class="input-group-text" onclick="togglePassword()">
+                                        <i id="passwordIcon" class="bi bi-eye"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-login text-white">ล็อคอิน</button>
+                            </div>
+                        </form>
+                        <p th:if="${error}" th:text="${error}" class="text-danger text-center mt-3"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <p th:if="${error}" th:text="${error}" style="color:red;"></p>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.classList.remove('bi-eye');
+                passwordIcon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.classList.remove('bi-eye-slash');
+                passwordIcon.classList.add('bi-eye');
+            }
+        }
+    </script>
 </body>
 </html>

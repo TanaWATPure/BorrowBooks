@@ -23,12 +23,14 @@ DROP TABLE IF EXISTS `book`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `book` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
-  `author` varchar(255) DEFAULT NULL,
-  `quantity` int DEFAULT '1',
+  `author` varchar(255) NOT NULL,
+  `quantity` int NOT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +39,7 @@ CREATE TABLE `book` (
 
 LOCK TABLES `book` WRITE;
 /*!40000 ALTER TABLE `book` DISABLE KEYS */;
-INSERT INTO `book` VALUES (1,'Clean Code','Robert C. Martin',4),(2,'Spring Boot in Action','Craig Walls',3),(3,'Effective Java','Joshua Bloch',2),(4,'vibecode','vi',1);
+INSERT INTO `book` VALUES (1,'Java Programming','James Gosling',4,'uploads/1753718789712_beko1.png',''),(15,'Java Programming	3','virus pure',3,'uploads/1753719281572_beko2.png','asdasdsad'),(20,'Test','Test',2,'uploads/1754228527483_Screenshot 2025-04-09 082236.png','Test');
 /*!40000 ALTER TABLE `book` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-20 12:30:31
+-- Dump completed on 2025-08-03 21:12:51

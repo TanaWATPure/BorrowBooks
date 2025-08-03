@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: content(~{::section})}">
+
+
+
+<body>
+
+
+    <section>
+        <h2>จัดการผู้ใช้งาน</h2>
+
+        <hr>
+
+        <h3>เพิ่มผู้ใช้งาน</h3>
+        <form th:action="@{/admin/users/add}" method="post">
+            <div>
+                <label for="username">ชื่อผู้ใช้งาน:</label>
+                <input type="text" id="username" name="username" required />
+            </div>
+            <div>
+                <label for="password">หรัสผ่าน:</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div>
+                <label for="role">บทบาท:</label>
+                <select id="role" name="role">
+                    <option value="user" selected>User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <button type="submit">สร้างผู้ใช้งาน</button>
+        </form>
+
+        <hr>
+
+        <h3>ผู้ใช้ที่มีอยู่</h3>
+        <table border="1" style="width: 100%; margin-top: 20px;">
+            <thead>
+                <tr>
+                    <th>ไอดี</th>
+                    <th>ชื่อผู้ใช้งาน</th>
+                    <th>บทบาท</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${#lists.isEmpty(users)}">
+                    <td colspan="3">ไม่มีผู้ใช้งาน</td>
+                </tr>
+                <tr th:each="u : ${users}">
+                    <td th:text="${u.id}"></td>
+                    <td th:text="${u.username}"></td>
+                    <td th:text="${u.role}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </section>
+
+</body>
+</html>

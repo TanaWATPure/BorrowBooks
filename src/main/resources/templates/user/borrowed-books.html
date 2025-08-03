@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/user-layout :: content(~{::section})}">
+<section>
+    <h2>บันทึกการยืมหนังสือ</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>หนังสือ</th>
+                <th>จำนวน</th>
+                <th>วันยืมหนังสือ</th>
+                <th>วันคืนหนังสือ</th>
+                <th>สถานะ</th>
+                <th>ค่าปรับ</th>
+                <th>การจัดการ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="b : ${currentBorrows}">
+                <td th:text="${b.book.title}"></td>
+                <td th:text="${b.quantity}"></td>
+                <td th:text="${#temporals.format(b.borrowDate, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                <td th:text="${#temporals.format(b.dueDate, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                <td th:text="${b.returnDate != null} ? ${#temporals.format(b.returnDate, 'dd-MM-yyyy HH:mm:ss')} : 'ยังไม่คืน'"></td>
+                <td th:text="${b.returned} ? 'คืนแล้ว' : 'ยังไม่คืน'"></td>
+                <td th:text="${b.fine} + ' บาท'"></td>
+                <td>
+                    <form th:action="@{/user/return/{borrowId}(borrowId=${b.id})}" method="post" th:if="!${b.returned}">
+                        <button type="submit">คืน</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+</html>

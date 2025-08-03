@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/user-layout :: content(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>ยืมหนังสือ</title>
+    <style>
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        .btn-borrow {
+            background: linear-gradient(to right, #0d6efd, #0a58ca);
+        }
+        .btn-borrow:hover {
+            background: linear-gradient(to right, #0a58ca, #0948a8);
+        }
+    </style>
+</head>
+<body class="bg-light">
+<section class="container my-5">
+    <h2 class="text-center mb-4 fw-bold text-dark">📚 ยืมหนังสือ</h2>
+    <form th:action="@{/user/dashboard/{userId}(userId=${user.id})}" method="get" class="mb-4 d-flex gap-2">
+    <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="ค้นหาชื่อหนังสือ หรือ ผู้เขียน" />
+    <button type="submit" class="btn btn-primary">ค้นหา</button>
+    <a th:href="@{/user/dashboard/{userId}(userId=${user.id})}" class="btn btn-secondary">ล้าง</a>
+</form>
+
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col" th:each="book : ${availableBooks}" th:if="${book.quantity > 0}">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="text-center p-3">
+                    <img th:if="${book.imageUrl != null}" 
+                         th:src="@{'/' + ${book.imageUrl}}" 
+                         alt="รูปหนังสือ"
+                         class="card-img-top img-fluid rounded" style="max-height: 200px; width: auto;">
+                    <div th:if="${book.imageUrl == null}" class="text-muted fst-italic">ไม่มีรูป</div>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title fw-semibold text-dark" th:text="${book.title}"></h5>
+                    <h6 class="card-subtitle mb-2 text-muted" th:text="'ผู้เขียน: ' + ${book.author}"></h6>
+                    <p class="card-text text-secondary" th:text="${book.description}"></p>
+                    <p class="card-text fw-medium"><strong>จำนวนคงเหลือ:</strong> <span th:text="${book.quantity}"></span></p>
+                </div>
+                <div class="card-footer bg-white border-top-0 d-flex justify-content-center align-items-center gap-2">
+                    <form th:action="@{/user/borrow}" method="post" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="bookId" th:value="${book.id}" />
+                        <input type="number" name="quantity" value="1" min="1" th:max="${book.quantity}" 
+                               class="form-control form-control-sm" style="width: 70px;" required />
+                        <button type="submit" class="btn btn-primary">ยืม</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
