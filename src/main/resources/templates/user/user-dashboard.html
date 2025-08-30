@@ -1,62 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/user-layout :: content(~{::section})}">
 <head>
-    <meta charset="UTF-8">
-    <title>ยืมหนังสือ</title>
     <style>
-        .card {
+        .book-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .card:hover {
+        .book-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        }
-        .btn-borrow {
-            background: linear-gradient(to right, #0d6efd, #0a58ca);
-        }
-        .btn-borrow:hover {
-            background: linear-gradient(to right, #0a58ca, #0948a8);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body class="bg-light">
-<section class="container my-5">
-    <h2 class="text-center mb-4 fw-bold text-dark">📚 ยืมหนังสือ</h2>
-    <form th:action="@{/user/dashboard/{userId}(userId=${user.id})}" method="get" class="mb-4 d-flex gap-2">
-    <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="ค้นหาชื่อหนังสือ หรือ ผู้เขียน" />
-    <button type="submit" class="btn btn-primary">ค้นหา</button>
-    <a th:href="@{/user/dashboard/{userId}(userId=${user.id})}" class="btn btn-secondary">ล้าง</a>
-</form>
+<body>
+<section>
+    
+    <!-- แก้ไขโดยรวม Header และ Body ให้อยู่ใน Card เดียวกัน -->
+    <div class="card shadow-sm">
+        
+        <!-- 1. Card Header ที่ถูกต้อง -->
+        <div class="card-header bg-white">
+            <h3 class="card-title d-flex align-items-center mb-0">
+                <i class="fas fa-book-reader me-2"></i> 
+                ค้นหาและยืมหนังสือ
+            </h3>
+        </div>
 
+        <!-- 2. Card Body ที่มีทั้ง Search Form และ Book List -->
+        <div class="card-body">
+            <!-- Search Form -->
+            <form th:action="@{/user/dashboard/{userId}(userId=${user.id})}" method="get" class="mb-4">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="ค้นหาจากชื่อหนังสือ หรือ ผู้เขียน..."/>
+                    <button type="submit" class="btn btn-primary">ค้นหา</button>
+                    <a th:href="@{/user/dashboard/{userId}(userId=${user.id})}" class="btn btn-outline-secondary">ล้างค่า</a>
+                </div>
+            </form>
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col" th:each="book : ${availableBooks}" th:if="${book.quantity > 0}">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="text-center p-3">
-                    <img th:if="${book.imageUrl != null}" 
-                         th:src="@{'/' + ${book.imageUrl}}" 
-                         alt="รูปหนังสือ"
-                         class="card-img-top img-fluid rounded" style="max-height: 200px; width: auto;">
-                    <div th:if="${book.imageUrl == null}" class="text-muted fst-italic">ไม่มีรูป</div>
-                </div>
-                <div class="card-body text-center">
-                    <h5 class="card-title fw-semibold text-dark" th:text="${book.title}"></h5>
-                    <h6 class="card-subtitle mb-2 text-muted" th:text="'ผู้เขียน: ' + ${book.author}"></h6>
-                    <p class="card-text text-secondary" th:text="${book.description}"></p>
-                    <p class="card-text fw-medium"><strong>จำนวนคงเหลือ:</strong> <span th:text="${book.quantity}"></span></p>
-                </div>
-                <div class="card-footer bg-white border-top-0 d-flex justify-content-center align-items-center gap-2">
-                    <form th:action="@{/user/borrow}" method="post" class="d-flex align-items-center gap-2">
-                        <input type="hidden" name="bookId" th:value="${book.id}" />
-                        <input type="number" name="quantity" value="1" min="1" th:max="${book.quantity}" 
-                               class="form-control form-control-sm" style="width: 70px;" required />
-                        <button type="submit" class="btn btn-primary">ยืม</button>
-                    </form>
+            <!-- Book List / Results Area -->
+            
+            <!-- กรณีไม่พบข้อมูล -->
+            <div th:if="${#lists.isEmpty(availableBooks)}" class="text-center py-5">
+                <i class="fas fa-book-dead fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">ไม่พบหนังสือที่ตรงกับคำค้นหา</h4>
+                <p th:if="${keyword != null and !keyword.isEmpty()}">
+                    ลองใช้คำค้นหาอื่น หรือ <a th:href="@{/user/dashboard/{userId}(userId=${user.id})}">ดูหนังสือทั้งหมด</a>
+                </p>
+            </div>
+            
+            <!-- แสดงรายการหนังสือ -->
+            <div th:unless="${#lists.isEmpty(availableBooks)}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div class="col" th:each="book : ${availableBooks}" th:if="${book.quantity > 0}">
+                    <div class="card h-100 book-card shadow-sm border-light">
+                        <!-- ส่วนรูปภาพ -->
+                        <div class="d-flex justify-content-center p-3 bg-light">
+                            <img th:if="${book.imageUrl != null}" 
+                                th:src="@{'/' + ${book.imageUrl}}" 
+                                alt="Book Cover"
+                                class="img-fluid rounded" style="max-height: 200px; width: auto; object-fit: contain;">
+                            <div th:if="${book.imageUrl == null}" 
+                                class="d-flex align-items-center justify-content-center bg-secondary-subtle rounded"
+                                style="height: 200px; width: 150px;">
+                                <i class="fas fa-image fa-2x text-muted"></i>
+                            </div>
+                        </div>
+
+                        <!-- ส่วนเนื้อหา -->
+                        <div class="card-body d-flex flex-column text-center">
+                            <h5 class="card-title fw-bold" th:text="${book.title}">Book Title</h5>
+                            <p class="card-text text-muted small mb-2" th:text="${book.author}">Author</p>
+                            <p class="card-text text-secondary small flex-grow-1" th:text="${book.description}">Description</p>
+                            <div class="mt-auto">
+                                <span class="badge bg-success-subtle border border-success-subtle rounded-pill text-success-emphasis px-3 py-2">
+                                    มีให้ยืม: <span class="fw-bold" th:text="${book.quantity}"></span> เล่ม
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- ส่วนปุ่มยืม (Footer) -->
+                        <div class="card-footer bg-transparent border-top-0 pb-3">
+                            <form th:action="@{/user/borrow}" method="post" class="d-flex justify-content-center">
+                                <div class="input-group" style="max-width: 200px;">
+                                    <input type="hidden" name="bookId" th:value="${book.id}" />
+                                    <input type="number" name="quantity" value="1" min="1" th:max="${book.quantity}" 
+                                        class="form-control text-center" required />
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-shopping-cart me-1"></i> ยืม
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-
 </body>
 </html>

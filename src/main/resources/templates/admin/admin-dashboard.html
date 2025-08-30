@@ -1,28 +1,64 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"th:replace="~{layout/admin-layout :: content(~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: content(~{::section})}">
 
-<body> 
+<body>
+<section>
+    <!-- หัวข้อ -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 fw-bold text-primary">📊 สรุปแดชบอร์ด</h2>
+    </div>
 
-
-    <section>
-        <h2>สรุปแดชบอร์ด</h2>
-        
-        <div class="summary-cards"> 
-            <div class="card">
-                <h3>จำนวนผู้ใช้</h3>
-                <p th:text="${totalUsers}"></p>
-            </div>
-            <div class="card">
-                <h3>จำนวนหนังสือ</h3>
-                <p th:text="${totalBooks}"></p>
-            </div>
-            <div class="card">
-                <h3>จำนวนการยืมหนังสือ</h3>
-                <p th:text="${borrowedCount}"></p>
+    <!-- Summary Cards -->
+    <div class="row g-2">
+        <!-- ผู้ใช้ -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3 h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="me-3 text-white bg-primary rounded-circle d-flex justify-content-center align-items-center" 
+                         style="width:60px; height:60px;">
+                        <i class="fas fa-users fa-lg"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-1 text-muted">จำนวนผู้ใช้</h6>
+                        <h3 class="fw-bold mb-0" th:text="${totalUsers}"></h3>
+                    </div>
+                </div>
             </div>
         </div>
 
-    </section>
+        <!-- หนังสือ -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3 h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="me-3 text-white bg-success rounded-circle d-flex justify-content-center align-items-center" 
+                         style="width:60px; height:60px;">
+                        <i class="fas fa-book fa-lg"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-1 text-muted">จำนวนหนังสือ</h6>
+                        <h3 class="fw-bold mb-0" th:text="${totalBooks}"></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- การยืม -->
+        <div class="col-md-">
+            <div class="card shadow-sm border-0 rounded-3 h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="me-3 text-white bg-warning rounded-circle d-flex justify-content-center align-items-center" 
+                         style="width:60px; height:60px;">
+                        <i class="fas fa-clipboard-list fa-lg"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-1 text-muted">จำนวนการยืม</h6>
+                        <h3 class="fw-bold mb-0" th:text="${borrowedCount}"></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 </body>
 </html>

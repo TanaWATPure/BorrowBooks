@@ -1,36 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/user-layout :: content(~{::section})}">
 <section>
-    <h2>บันทึกการยืมหนังสือ</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>หนังสือ</th>
-                <th>จำนวน</th>
-                <th>วันยืมหนังสือ</th>
-                <th>วันคืนหนังสือ</th>
-                <th>สถานะ</th>
-                <th>ค่าปรับ</th>
-                <th>การจัดการ</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="b : ${currentBorrows}">
-                <td th:text="${b.book.title}"></td>
-                <td th:text="${b.quantity}"></td>
-                <td th:text="${#temporals.format(b.borrowDate, 'dd-MM-yyyy HH:mm:ss')}"></td>
-                <td th:text="${#temporals.format(b.dueDate, 'dd-MM-yyyy HH:mm:ss')}"></td>
-                <td th:text="${b.returnDate != null} ? ${#temporals.format(b.returnDate, 'dd-MM-yyyy HH:mm:ss')} : 'ยังไม่คืน'"></td>
-                <td th:text="${b.returned} ? 'คืนแล้ว' : 'ยังไม่คืน'"></td>
-                <td th:text="${b.fine} + ' บาท'"></td>
-                <td>
-                    <form th:action="@{/user/return/{borrowId}(borrowId=${b.id})}" method="post" th:if="!${b.returned}">
-                        <button type="submit">คืน</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- ใช้ Card เพื่อจัดกรอบเนื้อหา -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h3 class="card-title d-flex align-items-center mb-0">
+                <i class="fas fa-clipboard-check me-2"></i> 
+                รายการหนังสือที่ยืมอยู่
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <!-- ตรวจสอบก่อนว่ามีข้อมูลหรือไม่ -->
+                <div th:if="${#lists.isEmpty(currentBorrows)}" class="text-center text-muted py-5">
+                    <h4><i class="fas fa-book-open fa-2x mb-3"></i></h4>
+                    <h5>คุณยังไม่มียืมหนังสือในขณะนี้</h5>
+                    <p>ไปที่หน้า "ยืมหนังสือ" เพื่อเริ่มต้น</p>
+                </div>
+
+                <table th:unless="${#lists.isEmpty(currentBorrows)}" class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">หนังสือ</th>
+                            <th scope="col" class="text-center">จำนวน</th>
+                            <th scope="col">วันที่ยืม</th>
+                            <th scope="col">กำหนดคืน</th>
+                            <th scope="col" class="text-center">สถานะ</th>
+                            <th scope="col" class="text-end">ค่าปรับ (ปัจจุบัน)</th>
+                            <th scope="col" class="text-center">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- วนลูปแสดงข้อมูลการยืมปัจจุบัน -->
+                        <tr th:each="b : ${currentBorrows}" th:with="isOverdue=${b.dueDate.isBefore(T(java.time.LocalDateTime).now())}">
+                            <!-- ชื่อหนังสือ -->
+                            <td th:text="${b.book.title}">Book Title</td>
+                            
+                            <!-- จำนวน -->
+                            <td class="text-center" th:text="${b.quantity}">1</td>
+                            
+                            <!-- วันที่ยืม -->
+                            <td th:text="${#temporals.format(b.borrowDate, 'dd-MM-yyyy')}">Borrow Date</td>
+                            
+                            <!-- กำหนดคืน (ถ้าเกินกำหนดจะแสดงเป็นสีแดง) -->
+                            <td th:classappend="${isOverdue} ? 'text-danger fw-bold' : ''">
+                                <i class="far fa-calendar-alt me-1"></i>
+                                <span th:text="${#temporals.format(b.dueDate, 'dd-MM-yyyy')}"></span>
+                            </td>
+
+                            <!-- สถานะ (ใช้ Badge) -->
+                            <td class="text-center">
+                                <span th:if="${isOverdue}" class="badge bg-danger">เกินกำหนด</span>
+                                <span th:unless="${isOverdue}" class="badge bg-info">ยืมอยู่</span>
+                            </td>
+
+                            <!-- ค่าปรับ (ถ้ามีค่าปรับจะแสดงเป็นสีแดง) -->
+                            <td class="text-end" th:classappend="${b.fine > 0} ? 'text-danger fw-bold' : ''">
+                                <span th:text="${#numbers.formatDecimal(b.fine, 1, 'COMMA', 2, 'POINT')}">0.00</span> บาท
+                            </td>
+
+                            <!-- ปุ่มคืนหนังสือ -->
+                            <td class="text-center">
+                                <form th:action="@{/user/return/{borrowId}(borrowId=${b.id})}" method="post" th:if="!${b.returned}" 
+                                      onsubmit="return confirm('คุณต้องการยืนยันการคืนหนังสือเล่มนี้ใช่หรือไม่?');">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-undo-alt me-1"></i>
+                                        คืนหนังสือ
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </section>
 </html>

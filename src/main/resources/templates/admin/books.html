@@ -4,102 +4,107 @@
 <head>
     <meta charset="UTF-8">
     <title>จัดการหนังสือ</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .card, .table {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover, .table-hover tbody tr:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .table-container {
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .form-label {
-            font-weight: 500;
-        }
-    </style>
 </head>
-<body class="bg-light">
+<body>
 
-<section class="container my-5">
-    <h2 class="text-center mb-4 fw-bold text-dark">📚 จัดการหนังสือ</h2>
+<section>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">จัดการหนังสือ</h1>
+    </div>
 
-    <!-- แบบฟอร์มเพิ่มหนังสือ -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body p-4">
-            <h4 class="mb-3 fw-semibold text-dark fs-5">เพิ่มหนังสือใหม่</h4>
-            <form th:action="@{/admin/books/add}" method="post" enctype="multipart/form-data">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="title" class="form-label">ชื่อหนังสือ:</label>
-                        <input type="text" name="title" id="title" placeholder="ชื่อหนังสือ" class="form-control form-control-sm" required />
-                    </div>
-                    <div class="col-md-6">
-                        <label for="author" class="form-label">ผู้เขียน:</label>
-                        <input type="text" name="author" id="author" placeholder="ผู้เขียน" class="form-control form-control-sm" required />
-                    </div>
-                    <div class="col-md-6">
-                        <label for="quantity" class="form-label">จำนวน:</label>
-                        <input type="number" name="quantity" id="quantity" placeholder="จำนวน" class="form-control form-control-sm" required />
-                    </div>
-                    <div class="col-md-6">
-                        <label for="image" class="form-label">รูปภาพ:</label>
-                        <input type="file" name="image" id="image" accept="image/*" class="form-control form-control-sm" />
-                    </div>
-                    <div class="col-12">
-                        <label for="description" class="form-label">รายละเอียด:</label>
-                        <textarea name="description" id="description" rows="2" class="form-control form-control-sm" placeholder="รายละเอียด"></textarea>
-                    </div>
-                    <div class="col-12 d-grid">
-                        <button type="submit" class="btn btn-primary btn-sm text-white">เพิ่มหนังสือ</button>
-                    </div>
+    <!-- 1. ฟอร์มเพิ่มหนังสือ (ใน Accordion) -->
+    <div class="accordion shadow-sm mb-4" id="addBookAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAddBook" aria-expanded="false" aria-controls="collapseAddBook">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    <strong>เพิ่มหนังสือใหม่</strong> (คลิกเพื่อเปิด/ปิด)
+                </button>
+            </h2>
+            <div id="collapseAddBook" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#addBookAccordion">
+                <div class="accordion-body">
+                    <form th:action="@{/admin/books/add}" method="post" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="title" class="form-label">ชื่อหนังสือ:</label>
+                                <input type="text" name="title" id="title" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="author" class="form-label">ผู้เขียน:</label>
+                                <input type="text" name="author" id="author" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="quantity" class="form-label">จำนวน:</label>
+                                <input type="number" name="quantity" id="quantity" class="form-control" required min="0" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="image" class="form-label">รูปภาพ:</label>
+                                <input type="file" name="image" id="image" accept="image/*" class="form-control" />
+                            </div>
+                            <div class="col-12">
+                                <label for="description" class="form-label">รายละเอียด:</label>
+                                <textarea name="description" id="description" rows="3" class="form-control"></textarea>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>บันทึก
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
-    <!-- ตารางแสดงหนังสือ -->
-    <div class="table-container">
-        <table class="table table-hover table-bordered mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>รูปภาพ</th>
-                    <th>ชื่อหนังสือ</th>
-                    <th>ผู้เขียน</th>
-                    <th>จำนวน</th>
-                    <th>รายละเอียด</th>
-                    <th>การจัดการ</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="b : ${books}">
-                    <td>
-                        <img th:if="${b.imageUrl != null}" 
-                             th:src="@{'/' + ${b.imageUrl}}" 
-                             alt="รูปหนังสือ" class="img-fluid" style="max-width: 100px; max-height: 100px;" />
-                        <span th:if="${b.imageUrl == null}" class="text-muted">ไม่มีรูป</span>
-                    </td>
-                    <td th:text="${b.title}"></td>
-                    <td th:text="${b.author}"></td>
-                    <td th:text="${b.quantity}"></td>
-                    <td th:text="${b.description}"></td>
-                    <td>
-                        <button class="btn btn-sm btn-warning text-white"
-                                data-bs-toggle="modal"
-                                th:attr="data-bs-target='#editBookModal' + ${b.id}">แก้ไข</button>
-                        <a th:href="@{/admin/books/delete/{id}(id=${b.id})}"
-                           onclick="return confirm('ลบหนังสือเล่มนี้?')"
-                           class="btn btn-sm btn-danger text-white">ลบ</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- 2. ตารางแสดงหนังสือ (ใน Card) -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-list-ul me-2"></i>รายการหนังสือทั้งหมด</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col" style="width: 10%;">รูปภาพ</th>
+                            <th scope="col">ชื่อหนังสือ</th>
+                            <th scope="col">ผู้เขียน</th>
+                            <th scope="col" class="text-center">จำนวน</th>
+                            <th scope="col" class="text-center" style="width: 15%;">การจัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="b : ${books}">
+                            <td>
+                                <img th:if="${b.imageUrl != null}" 
+                                     th:src="@{'/' + ${b.imageUrl}}" 
+                                     alt="รูปหนังสือ" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover;" />
+                                <div th:if="${b.imageUrl == null}" class="text-muted small">ไม่มีรูป</div>
+                            </td>
+                            <td class="fw-bold" th:text="${b.title}"></td>
+                            <td th:text="${b.author}"></td>
+                            <td class="text-center" th:text="${b.quantity}"></td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-warning btn-sm"
+                                            data-bs-toggle="modal"
+                                            th:attr="data-bs-target='#editBookModal' + ${b.id}">
+                                        <i class="fas fa-edit"></i> แก้ไข
+                                    </button>
+                                    <a th:href="@{/admin/books/delete/{id}(id=${b.id})}"
+                                       onclick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบหนังสือเล่มนี้?')"
+                                       class="btn btn-danger btn-sm">
+                                       <i class="fas fa-trash-alt"></i> ลบ
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Modal แก้ไขหนังสือ -->
@@ -109,7 +114,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">แก้ไขหนังสือ: <span th:text="${b.title}"></span></h5>
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>แก้ไขหนังสือ: <span class="fw-bold" th:text="${b.title}"></span></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -118,28 +123,31 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">ชื่อหนังสือ:</label>
-                                <input type="text" name="title" th:value="${b.title}" class="form-control form-control-sm" required />
+                                <input type="text" name="title" th:value="${b.title}" class="form-control" required />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">ผู้เขียน:</label>
-                                <input type="text" name="author" th:value="${b.author}" class="form-control form-control-sm" required />
+                                <input type="text" name="author" th:value="${b.author}" class="form-control" required />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">จำนวน:</label>
-                                <input type="number" name="quantity" th:value="${b.quantity}" class="form-control form-control-sm" required />
+                                <input type="number" name="quantity" th:value="${b.quantity}" class="form-control" required min="0" />
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">รูปภาพ:</label>
-                                <input type="file" name="image" accept="image/*" class="form-control form-control-sm" />
-                                <small class="form-text text-muted">ปล่อยว่างหากไม่เปลี่ยนรูป</small>
+                                <label class="form-label">เปลี่ยนรูปภาพ:</label>
+                                <input type="file" name="image" accept="image/*" class="form-control" />
+                                <div class="form-text">ปล่อยว่างไว้หากไม่ต้องการเปลี่ยนรูปภาพปัจจุบัน</div>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">รายละเอียด:</label>
-                                <textarea name="description" class="form-control form-control-sm" th:text="${b.description}"></textarea>
+                                <textarea name="description" rows="3" class="form-control" th:text="${b.description}"></textarea>
                             </div>
                         </div>
-                        <div class="d-grid mt-3">
-                            <button type="submit" class="btn btn-primary btn-sm text-white">บันทึกการแก้ไข</button>
+                        <div class="text-end mt-4">
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">ยกเลิก</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>บันทึกการแก้ไข
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -149,6 +157,5 @@
 
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
